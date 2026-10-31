@@ -4,7 +4,7 @@ A Python and notebook workspace for making research data analysis more accessibl
 
 ## Current tool: descriptive statistics
 
-[`descriptive_statistics.py`](./descriptive_statistics.py) calculates the mean, variance, and standard deviation for one numeric column in a CSV file. It reports both population and sample variance and standard deviation so you can select the interpretation that matches your data.
+[`descriptive_statistics.py`](./scripts/descriptive_statistics.py) calculates the mean, variance, and standard deviation for one numeric column in a CSV file. It reports both population and sample variance and standard deviation so you can select the interpretation that matches your data.
 
 ### Requirements
 
