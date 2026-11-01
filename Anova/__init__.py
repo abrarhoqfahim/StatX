@@ -1,0 +1,1 @@
+"""StatX ANOVA analysis module."""
