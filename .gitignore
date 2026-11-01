@@ -19,6 +19,7 @@ dist/
 htmlcov/
 .tox/
 .nox/
+anova_results/
 
 # Jupyter
 .ipynb_checkpoints/
