@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+type: software
+title: Research Data Analysis
+authors:
+  - family-names: Fahim
+    given-names: Md Abrar Hoq
+    orcid: "https://orcid.org/0009-0002-7587-1137"
+repository-code: "https://github.com/abrarhoqfahim/StatX"
+license: MIT
