@@ -16,22 +16,22 @@ excluded rows is reported separately for each response. Invalid non-numeric or
 infinite response values are rejected rather than silently discarded or
 imputed. No outlier removal or imputation is performed.
 
-Let \(y_{ij}\) denote observation \(j\) in group \(i\), with \(k\) groups and
-\(N\) complete observations. The group mean and sample standard deviation
+Let $y_{ij}$ denote observation $j$ in group $i$, with $k$ groups and
+$N$ complete observations. The group mean and sample standard deviation
 reported in summaries are
 
-\[
+$$
 \bar y_i = \frac{1}{n_i}\sum_{j=1}^{n_i} y_{ij},
 \qquad
 s_i = \sqrt{\frac{1}{n_i-1}\sum_{j=1}^{n_i}(y_{ij}-\bar y_i)^2}.
-\]
+$$
 
 Group summaries also include standard errors and pointwise, two-sided
-\(t\)-based confidence intervals:
+$t$-based confidence intervals:
 
-\[
+$$
 \bar y_i \ \pm\ t_{1-\alpha/2,\,n_i-1}\frac{s_i}{\sqrt{n_i}}.
-\]
+$$
 
 These intervals are not multiplicity-adjusted.
 
@@ -45,74 +45,75 @@ test.
 
 The model is
 
-\[
+$$
 y_{ij} = \mu + \tau_i + \varepsilon_{ij},
-\]
+$$
 
-where \(\mu\) is the overall level, \(\tau_i\) is the group effect, and
-\(\varepsilon_{ij}\) is residual error. The implementation fits an ordinary
+where $\mu$ is the overall level, $\tau_i$ is the group effect, and
+$\varepsilon_{ij}$ is residual error. The implementation fits an ordinary
 least-squares model with sum-to-zero factor contrasts and obtains a Type II
 ANOVA table. For this one-factor model, the factor test is the usual
 between-groups versus within-groups F test:
 
-\[
+$$
 SS_{\text{between}} = \sum_{i=1}^{k} n_i(\bar y_i-\bar y)^2,
 \qquad
 SS_{\text{error}} = \sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_{ij}-\bar y_i)^2,
-\]
-\[
+$$
+
+$$
 F = \frac{SS_{\text{between}}/(k-1)}
          {SS_{\text{error}}/(N-k)}.
-\]
+$$
 
 Under the null hypothesis that all group means are equal, this statistic is
-compared with an \(F_{k-1,N-k}\) distribution.
+compared with an $F_{k-1,N-k}$ distribution.
 
 ### Welch one-way ANOVA
 
 Welch's test is used when unequal group variances are a concern. For each group,
-let \(s_i^2\) be its sample variance and define
+let $s_i^2$ be its sample variance and define
 
-\[
+$$
 w_i = \frac{n_i}{s_i^2}, \qquad
 \bar y_w = \frac{\sum_i w_i\bar y_i}{\sum_i w_i}, \qquad
 C = \sum_i\frac{(1-w_i/\sum_r w_r)^2}{n_i-1}.
-\]
+$$
 
 The implemented statistic and approximate degrees of freedom are
 
-\[
+$$
 F_W =
 \frac{\sum_i w_i(\bar y_i-\bar y_w)^2/(k-1)}
      {1+\frac{2(k-2)}{k^2-1}C},
 \qquad
 \nu_1=k-1,\qquad
 \nu_2=\frac{k^2-1}{3C}.
-\]
+$$
 
-The p-value is the upper-tail probability from \(F_{\nu_1,\nu_2}\). The
+The p-value is the upper-tail probability from $F_{\nu_1,\nu_2}$. The
 implementation requires at least two observations and nonzero sample variance
 in every group.
 
 ### Kruskal-Wallis
 
 Kruskal-Wallis is a rank-based independent-group alternative. Pool all
-observations, assign average ranks to ties, and let \(R_i\) be the rank sum in
-group \(i\). The test statistic is
+observations, assign average ranks to ties, and let $R_i$ be the rank sum in
+group $i$. The test statistic is
 
-\[
+$$
 H = \frac{12}{N(N+1)}\sum_{i=1}^{k}\frac{R_i^2}{n_i} - 3(N+1).
-\]
+$$
 
 The SciPy implementation applies tie correction and evaluates the large-sample
-reference distribution with \(k-1\) degrees of freedom. This test concerns
+reference distribution with $k-1$ degrees of freedom. This test concerns
 group rank distributions; interpreting it strictly as a test of medians
 requires similarly shaped group distributions. The reported rank-effect
 estimate is
 
-\[
+$$
 \epsilon^2 = \max\left(0,\frac{H-k+1}{N-k}\right).
-\]
+$$
 
 Each group must have at least two observations.
 
@@ -120,13 +121,13 @@ Each group must have at least two observations.
 
 The two-way model includes both main effects and their interaction:
 
-\[
+$$
 y_{ijk} = \mu + \alpha_i + \beta_j + (\alpha\beta)_{ij}
           + \varepsilon_{ijk},
-\]
+$$
 
-where \(\alpha_i\) and \(\beta_j\) are the effects of factors A and B, and
-\((\alpha\beta)_{ij}\) is their interaction. The implementation fits this model
+where $\alpha_i$ and $\beta_j$ are the effects of factors A and B, and
+$(\alpha\beta)_{ij}$ is their interaction. The implementation fits this model
 by ordinary least squares using sum-to-zero contrasts. Every combination of
 factor levels must contain at least one complete observation; empty cells are
 rejected because factorial effects can be non-estimable.
@@ -141,11 +142,11 @@ passed to the ANOVA table calculation:
   toolkit uses sum-to-zero contrasts, which are important for interpreting
   Type III tests.
 
-For a term \(q\), the conventional test statistic is
+For a term $q$, the conventional test statistic is
 
-\[
+$$
 F_q = \frac{SS_q/df_q}{SS_{\text{error}}/df_{\text{error}}},
-\]
+$$
 
 with its p-value evaluated against the corresponding F reference distribution.
 In an unbalanced design, sums-of-squares types can give different tests;
@@ -153,20 +154,21 @@ report the chosen type and interpret main effects in light of any interaction.
 
 ## Effect sizes
 
-For each estimable ANOVA term \(q\), the toolkit reports eta-squared, partial
+For each estimable ANOVA term $q$, the toolkit reports eta-squared, partial
 eta-squared, and omega-squared:
 
-\[
+$$
 \eta^2_q = \frac{SS_q}{SS_{\text{total}}},
 \qquad
 \eta^2_{p,q} = \frac{SS_q}{SS_q+SS_{\text{error}}},
-\]
-\[
+$$
+
+$$
 \omega^2_q =
 \max\left(0,\frac{SS_q-df_q\,MSE}{SS_{\text{total}}+MSE}\right),
 \qquad
 MSE = \frac{SS_{\text{error}}}{df_{\text{error}}}.
-\]
+$$
 
 For the classical one-way analysis, the reported effect in the interpretation
 is eta-squared. For the two-way analysis, the per-term interpretation reports
@@ -198,10 +200,10 @@ Post-hoc procedures are:
 - Kruskal-Wallis: two-sided pairwise Mann-Whitney tests with Holm-adjusted
   p-values. The displayed difference is the difference in sample medians; no
   confidence interval is claimed.
-- Two-way: if the interaction p-value is below \(\alpha\), Tukey comparisons
+- Two-way: if the interaction p-value is below $\alpha$, Tukey comparisons
   are performed for simple effects within levels of the other factor.
   Otherwise, Tukey comparisons are produced for main effects whose p-values
-  are below \(\alpha\).
+  are below $\alpha$.
 
 Use the interaction plot and simple effects to interpret a significant
 interaction rather than relying on isolated marginal effects. Statistical
