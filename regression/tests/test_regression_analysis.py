@@ -128,6 +128,16 @@ class RegressionAnalysisTests(unittest.TestCase):
             text=True,
         )
 
+        output_path = path.with_name(
+            "{}_regression_results.csv".format(path.stem)
+        )
+        plot_path = (
+            Path(__file__).resolve().parents[2]
+            / "data"
+            / "{}_linear_diagnostics.png".format(path.stem)
+        )
+        self.addCleanup(output_path.unlink, missing_ok=True)
+        self.addCleanup(plot_path.unlink, missing_ok=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("R-squared:", result.stdout)
         self.assertIn("Model F-test p-value:", result.stdout)
@@ -136,6 +146,66 @@ class RegressionAnalysisTests(unittest.TestCase):
             result.stdout,
         )
         self.assertIn("x\t3", result.stdout)
+        self.assertIn(str(output_path), result.stdout)
+        self.assertIn(str(plot_path), result.stdout)
+        self.assertTrue(plot_path.is_file())
+        with plot_path.open("rb") as plot_file:
+            self.assertEqual(plot_file.read(8), b"\x89PNG\r\n\x1a\n")
+
+        with output_path.open("r", encoding="utf-8", newline="") as output_file:
+            rows = list(csv.DictReader(output_file))
+        coefficient = next(
+            row
+            for row in rows
+            if row["section"] == "coefficient" and row["metric"] == "x"
+        )
+        self.assertEqual(coefficient["value"], "3")
+        self.assertIn("R-squared", [row["metric"] for row in rows])
+
+    def test_cli_saves_diagnostics_for_multiple_and_polynomial_models(self):
+        test_cases = [
+            (
+                "multiple",
+                [["x1", "x2", "y"], [0, 0, 1], [1, 0, 3], [0, 1, 4],
+                 [1, 1, 6], [2, 1, 8], [1, 2, 9]],
+                ["x1", "x2"],
+            ),
+            (
+                "polynomial",
+                [["x", "y"]]
+                + [[x, 1 + 2 * x + 3 * x**2] for x in range(-3, 4)],
+                ["x"],
+            ),
+        ]
+        script = Path(__file__).resolve().parents[1] / "regression_analysis.py"
+        data_directory = Path(__file__).resolve().parents[2] / "data"
+
+        for model, rows, predictors in test_cases:
+            with self.subTest(model=model):
+                path = self._write_csv(rows)
+                plot_path = data_directory / "{}_{}_diagnostics.png".format(
+                    path.stem, model
+                )
+                self.addCleanup(plot_path.unlink, missing_ok=True)
+                command = [
+                    sys.executable,
+                    str(script),
+                    str(path),
+                    "--target",
+                    "y",
+                    "--predictors",
+                    *predictors,
+                    "--model",
+                    model,
+                ]
+                if model == "polynomial":
+                    command.extend(["--degree", "2"])
+                result = subprocess.run(
+                    command, check=False, capture_output=True, text=True
+                )
+
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertTrue(plot_path.is_file())
 
 
 if __name__ == "__main__":
