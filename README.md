@@ -10,7 +10,7 @@ and ANOVA.
 ```text
 StatX/
 ├── Anova/                         # One-way and two-way ANOVA
-│   ├── anova_analysis.md                  # ANOVA setup, usage, outputs, and safeguards
+│   ├── anova_analysis.md          # ANOVA setup, usage, outputs, and safeguards
 │   ├── __init__.py
 │   ├── anova_analysis.py          # ANOVA command-line and interactive entry point
 │   ├── anova_toolkit/             # Reusable ANOVA implementation
