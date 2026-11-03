@@ -1,59 +1,94 @@
-# Research Data Analysis
+# StatX
 
-A reproducible Python toolkit for exploring research data. The project currently provides command-line tools for descriptive statistics and correlations, with a long-term goal of making reliable analysis accessible and clearly explained.
+StatX is an under-development Python toolkit for clear, reproducible statistical
+analysis of research data. Its current tools work primarily with CSV files and
+provide descriptive summaries, association analysis, regression, resampling,
+and ANOVA.
 
-## Requirements
+## Repository map
 
-- Python 3.8 or newer
-- No third-party packages
-
-Run commands from the project root. Use `python` instead of `python3` if that is how Python is named on your system.
-
-## Correlation analysis
-
-The correlation tool calculates Pearson, Spearman, and Kendall tau-b coefficients for two numeric columns. It also calculates point-biserial correlation when one column is binary and the other has more than two distinct values.
-
-Run the analysis included with this project:
-
-```bash
-python3 scripts/correlation_analysis.py data/pcm_thermal_analysis.csv "2300(MF)" "2300(HST)"
+```text
+StatX/
+├── Anova/                         # One-way and two-way ANOVA
+│   ├── anova_analysis.md                  # ANOVA setup, usage, outputs, and safeguards
+│   ├── __init__.py
+│   ├── anova_analysis.py          # ANOVA command-line and interactive entry point
+│   ├── anova_toolkit/             # Reusable ANOVA implementation
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   ├── data_loader.py
+│   │   ├── data_validator.py
+│   │   ├── one_way_anova.py
+│   │   ├── preprocessing.py
+│   │   ├── reporting.py
+│   │   ├── results.py
+│   │   ├── statistics.py
+│   │   ├── two_way_anova.py
+│   │   └── visualizations.py
+│   └── tests/
+│       └── test_anova_toolkit.py
+├── docs/                          # Methods and interpretation notes
+│   ├── anova.md
+│   ├── bootstrap.md
+│   ├── correlation_and_descriptive.md
+│   └── regression.md
+├── regression/                    # OLS regression analysis
+│   ├── diagnostic_plots.py        # Regression diagnostic plotting
+│   ├── regression_analysis.py     # Regression command-line analysis
+│   └── tests/
+│       └── test_regression_analysis.py
+├── scripts/                       # Standalone CSV analysis tools
+│   ├── bootstrap_mean.py
+│   ├── correlation_analysis.py
+│   └── descriptive_statistics.py
+├── .gitignore
+├── CITATION.cff
+├── LICENSE
+├── README.md
+└── requirements.txt               # Shared Python dependencies
 ```
 
-The script writes results to `data/pcm_thermal_analysis_correlations.csv` by default. To choose another output path, add `--output path/to/results.csv`.
+Generated Python cache files and other ignored local artifacts are omitted
+from this map.
 
-### Results
+## Available analyses
 
-Correlation between `2300(MF)` and `2300(HST)` in `data/pcm_thermal_analysis.csv`:
+1. **Descriptive statistics** — count, mean, and population and sample
+   variance and standard deviation for a numeric CSV column:
+   [`scripts/descriptive_statistics.py`](./scripts/descriptive_statistics.py);
+   [methodology and details](./docs/correlation_and_descriptive.md).
+2. **Correlation** — Pearson, Spearman, Kendall tau-b, and applicable
+   point-biserial coefficients for two numeric CSV columns:
+   [`scripts/correlation_analysis.py`](./scripts/correlation_analysis.py);
+   [methodology and details](./docs/correlation_and_descriptive.md).
+3. **Bootstrap mean estimation** — bootstrap standard error and percentile
+   confidence interval for a numeric CSV column:
+   [`scripts/bootstrap_mean.py`](./scripts/bootstrap_mean.py);
+   [methodology and details](./docs/bootstrap.md).
+4. **Regression** — simple linear, multiple linear, and polynomial ordinary
+   least-squares models, with fit statistics, coefficient inference, and
+   diagnostic plots:
+   [`regression/regression_analysis.py`](./regression/regression_analysis.py)
+   and [`regression/diagnostic_plots.py`](./regression/diagnostic_plots.py);
+   [methodology and details](./docs/regression.md).
+5. **ANOVA** — one-way classical, Welch, or Kruskal–Wallis analysis and
+   two-way factorial ANOVA, with assumption checks, post-hoc comparisons,
+   visualizations, and reports:
+   [`Anova/anova_analysis.py`](./Anova/anova_analysis.py);
+   [methodology](./docs/anova.md) and
+   [toolkit documentation](./Anova/anova_analysis.md).
 
-| Method | Coefficient | Complete pairs | Rows skipped |
-|---|---:|---:|---:|
-| Pearson | 0.7544 | 1,201 | 0 |
-| Spearman | 0.9973 | 1,201 | 0 |
-| Kendall tau-b | 0.9816 | 1,201 | 0 |
-| Point-biserial | Not applicable | 1,201 | 0 |
+## Install dependencies
 
-The results show a strong positive rank association (Spearman and Kendall) and a positive linear association (Pearson) for these columns. Point-biserial correlation does not apply because the selected columns do not meet the required binary/continuous combination. Correlation describes association, not causation; interpret coefficients in light of the variables, measurement scales, and study design.
-
-The script excludes a row if either selected cell is blank and reports the number of complete pairs and skipped rows. Non-numeric or non-finite values, malformed CSV rows, and missing or duplicated column headers produce an error. Undefined or inapplicable coefficients are recorded with a status and note in the results CSV.
-
-To analyze a different pair, replace the input path and exact column names:
+Install the packages listed in `requirements.txt` from the repository root:
 
 ```bash
-python3 scripts/correlation_analysis.py path/to/data.csv column_x column_y
+python -m pip install -r requirements.txt
 ```
 
-Quote paths or column names containing spaces or shell-special characters. Use `--output` to set a custom results path.
+## Ambition and stage
 
-## Descriptive statistics
-
-[`scripts/descriptive_statistics.py`](./scripts/descriptive_statistics.py) reports the count, mean, population variance and standard deviation, and sample variance and standard deviation for one numeric CSV column.
-
-```bash
-python3 scripts/descriptive_statistics.py data/pcm_thermal_analysis.csv "2300(MF)"
-```
-
-Use the exact CSV header as the column argument. The script skips blank cells and reports their count. Sample variance and standard deviation require at least two numeric values.
-
-## Project direction
-
-This project aims to grow into a beginner-friendly, reproducible toolkit for research data analysis. Planned directions include data validation and visualization, additional statistical methods, and foundational machine-learning workflows. Each addition should make its assumptions transparent and help users interpret results responsibly.
+StatX aims to grow into a dependable, accessible toolkit that makes research
+analysis and its assumptions easier to understand. It is currently under
+development; methods and interfaces may evolve, and results should be checked
+against the relevant methodology and study design.
