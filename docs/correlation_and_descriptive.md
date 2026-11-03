@@ -17,46 +17,62 @@ choose another location. Rows with a blank in either selected column are
 excluded as complete pairs; invalid numeric values, non-finite values,
 malformed rows, and missing or duplicated selected headers produce an error.
 
-For $n$ complete pairs $(x_i,y_i)$, the tool reports:
+For $n$ complete pairs $(x_i, y_i)$, the tool reports the following
+coefficients.
 
-- **Pearson correlation** measures linear association:
+### Pearson correlation
 
-  $$
-  r = \frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}
-           {\sqrt{\sum_{i=1}^{n}(x_i-\bar{x})^2
-                  \sum_{i=1}^{n}(y_i-\bar{y})^2}}.
-  $$
+Pearson correlation measures linear association:
 
-- **Spearman correlation** is Pearson correlation applied to average ranks
-  (ties receive their average rank):
+$$
+r =
+\frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}
+     {\sqrt{\left[\sum_{i=1}^{n}(x_i-\bar{x})^2\right]
+                  \left[\sum_{i=1}^{n}(y_i-\bar{y})^2\right]}}.
+$$
 
-  $$
-  \rho_s = \operatorname{corr}(R_x,R_y).
-  $$
+### Spearman correlation
 
-- **Kendall tau-b** accounts for ties. Let $C$ and $D$ be concordant and
-  discordant pair counts, and $T_x,T_y$ the counts tied only in $x$ and only
-  in $y$. Then
+Spearman correlation is Pearson correlation applied to average ranks; ties
+receive their average rank. Here $R_x$ and $R_y$ are the ranks of the two
+variables, and $\bar{R}_x$ and $\bar{R}_y$ are their mean ranks:
 
-  $$
-  \tau_b = \frac{C-D}{\sqrt{(C+D+T_x)(C+D+T_y)}}.
-  $$
+$$
+\rho_s =
+\frac{\sum_{i=1}^{n}(R_{x,i}-\bar{R}_x)(R_{y,i}-\bar{R}_y)}
+     {\sqrt{\left[\sum_{i=1}^{n}(R_{x,i}-\bar{R}_x)^2\right]
+                  \left[\sum_{i=1}^{n}(R_{y,i}-\bar{R}_y)^2\right]}}.
+$$
 
-- **Point-biserial correlation** is reported only when one selected variable
-  has exactly two observed values and the other has more than two. It is
-  Pearson correlation after coding the binary variable's lower value as 0 and
-  higher value as 1:
+### Kendall tau-b
 
-  $$
-  r_{pb} =
-  \frac{\bar{y}_1-\bar{y}_0}{s_y}
+Kendall tau-b accounts for ties. Let $C$ and $D$ be the counts of concordant
+and discordant pairs, respectively. Let $T_x$ and $T_y$ be the counts tied
+only in $x$ and only in $y$:
+
+$$
+\tau_b =
+\frac{C-D}
+     {\sqrt{(C+D+T_x)(C+D+T_y)}}.
+$$
+
+### Point-biserial correlation
+
+Point-biserial correlation is reported only when one selected variable has
+exactly two observed values and the other has more than two. The binary
+variable's lower value is coded as 0 and its higher value as 1. When $y$ is
+the continuous variable, the coefficient is:
+
+$$
+r_{pb}
+= \frac{\bar{y}_1-\bar{y}_0}{s_y}
   \sqrt{\frac{n_0n_1}{n(n-1)}}.
-  $$
+$$
 
-  Here $s_y$ is the sample standard deviation of the continuous variable,
-  and $n_0,n_1$ are the binary-group sizes. If the binary variable is the
-  second column, the returned coefficient is still a symmetric correlation
-  (with the continuous variable as the other input).
+Here $s_y$ is the sample standard deviation of the continuous variable, and
+$n_0$ and $n_1$ are the binary-group sizes. If the binary variable is the
+second column, the implementation reverses the inputs to calculate the same
+symmetric correlation.
 
 Undefined coefficients (for example, when a required variable has zero
 variance) are marked in the result CSV; inapplicable point-biserial results
