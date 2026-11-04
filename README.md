@@ -5,6 +5,10 @@ analysis of research data. Its current tools work primarily with CSV files and
 provide descriptive summaries, association analysis, regression, resampling,
 and ANOVA.
 
+<p align="center">
+  <img src="docs/StatX.png" alt="StatX — Statistics, Analysis, Insights" width="60%">
+</p>
+
 ## Repository map
 
 ```text
